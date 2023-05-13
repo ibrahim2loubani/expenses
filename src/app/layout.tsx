@@ -1,6 +1,6 @@
-import Drawer from '@components/ui/Drawer'
 import '@styles/globals.css'
 import { Roboto } from 'next/font/google'
+import { Providers } from '@redux/provider'
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -21,13 +21,13 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={roboto.className} suppressHydrationWarning={true}>
-        <div className='main'>
-          <div className='gradient' />
-        </div>
+        <Providers>
+          <div className='main'>
+            <div className='gradient' />
+          </div>
 
-        <main className='app'>
-          <Drawer children={children} />
-        </main>
+          <main className='app'>{children}</main>
+        </Providers>
       </body>
     </html>
   )
