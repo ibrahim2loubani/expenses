@@ -4,6 +4,13 @@ import { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, Edit, Trash2 } from 'lucide-react'
 import Button from '@components/ui/Button'
 
+import {
+  setModal,
+  selectedModal,
+  selectedModalId,
+} from '@redux/slices/modalSlice'
+import { useAppDispatch, useAppSelector } from '@redux/hooks'
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
@@ -50,6 +57,11 @@ export const columns: ColumnDef<Payment>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const payment = row.original
+      const dispatch = useAppDispatch()
+
+      const handleDeleteClick = () => {
+        dispatch(setModal(payment.id))
+      }
 
       return (
         <div className='flex-start gap-4'>
@@ -59,7 +71,11 @@ export const columns: ColumnDef<Payment>[] = [
           >
             <Edit className='text-white w-[18px]' />
           </label>
-          <Button size={'sm'} className='bg-red-600 rounded-full'>
+          <Button
+            size={'sm'}
+            className='bg-red-600 rounded-full'
+            onClick={handleDeleteClick}
+          >
             <Trash2 className='w-[18px]' />
           </Button>
         </div>

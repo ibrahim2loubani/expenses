@@ -7,15 +7,30 @@ import Delete from '@components/models/Delete'
 import Header from '@components/Header'
 import Drawer from '@components/ui/Drawer'
 
+import {
+  setModal,
+  selectedModal,
+  selectedModalId,
+} from '@redux/slices/modalSlice'
+import { useAppDispatch, useAppSelector } from '@redux/hooks'
+
 interface AppProps {
   data: any[]
 }
 
 const App: FC<AppProps> = ({ data }) => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
+  const [openDelete, setOpenDelete] = useState<boolean>(false)
+  const popup = useAppSelector(selectedModal)
+  const dispatch = useAppDispatch()
 
   const toggleDrawer = () => {
     setOpenDrawer((prev) => !prev)
+  }
+
+  const toggleDelete = () => {
+    // setOpenDelete((prev) => !prev)
+    dispatch(setModal(''))
   }
 
   return (
@@ -29,7 +44,7 @@ const App: FC<AppProps> = ({ data }) => {
         <div className='container'>
           <DataTable columns={columns} data={data} />
         </div>
-        {/* <Delete /> */}
+        {popup && <Delete toggle={toggleDelete} />}
       </main>
     </Drawer>
   )

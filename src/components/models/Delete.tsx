@@ -11,7 +11,7 @@ import Button from '@components/ui/Button'
 // import { setModals } from 'slices/modalSlice'
 
 interface DeleteProps {
-  // toggle?: () => void
+  toggle: () => void
   // id: number
   // for: string
   // refresh?: () => void
@@ -24,7 +24,7 @@ const Delete = (props: DeleteProps) => {
 
   const toggleOpen = () => {
     // dispatch(setModals(''))
-    // props.toggle()
+    props.toggle()
   }
 
   // const refreshCategories = async () => {
