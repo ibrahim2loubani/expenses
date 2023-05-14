@@ -1,6 +1,7 @@
 import '@styles/globals.css'
 import { Roboto } from 'next/font/google'
 import { Providers } from '@redux/provider'
+import { Toaster } from '@components/ui/Toast'
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
           </div>
 
           <main className='app'>{children}</main>
+          <Toaster position='top-center' />
         </Providers>
       </body>
     </html>

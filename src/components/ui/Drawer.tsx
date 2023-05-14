@@ -10,6 +10,7 @@ import {
   selectedModalId,
 } from '@redux/slices/modalSlice'
 import { useAppDispatch, useAppSelector } from '@redux/hooks'
+import { toast } from '@components/ui/Toast'
 
 interface DrawerProps {
   children: ReactNode
@@ -23,6 +24,14 @@ const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
   const dispatch = useAppDispatch()
 
   const [isChecked, setIsChecked] = useState<boolean>(isOpen)
+
+  const handleSubmit = () => {
+    toast({
+      // title: 'Request Successful',
+      message: 'Edit successfully',
+      type: 'success',
+    })
+  }
 
   useEffect(() => {
     setIsChecked(isOpen)
@@ -66,7 +75,9 @@ const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
               placeholder='Expense description...'
             />
             <div className='w-full flex-between'>
-              <Button className=''>Submit</Button>
+              <Button className='' onClick={handleSubmit}>
+                Submit
+              </Button>
               <label
                 htmlFor='my-drawer-4'
                 className='drawer-button h-10 py-2 px-4 bg-red-600 text-white font-medium transition-color outline-none rounded-md text-sm flex-center cursor-pointer hover:bg-opacity-80 active:scale-95'

@@ -16,24 +16,24 @@ import { useAppDispatch, useAppSelector } from '@redux/hooks'
 export type Payment = {
   id: string
   amount: number
-  status: 'pending' | 'processing' | 'success' | 'failed'
-  email: string
+  description: string
+  name: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: 'status',
-    header: 'Status',
+    accessorKey: 'id',
+    header: 'Id',
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'name',
     header: ({ column }) => {
       return (
         <Button
           variant='outline'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          Name
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       )
@@ -50,6 +50,20 @@ export const columns: ColumnDef<Payment>[] = [
       }).format(amount)
 
       return <div className='text-right font-medium'>{formatted}</div>
+    },
+  },
+  {
+    accessorKey: 'Description',
+    id: 'description',
+    cell: ({ row }) => {
+      const payment = row.original
+      const dispatch = useAppDispatch()
+
+      const handleDeleteClick = () => {
+        dispatch(setModal(payment.id))
+      }
+
+      return <div>{row.original.description}</div>
     },
   },
   {
