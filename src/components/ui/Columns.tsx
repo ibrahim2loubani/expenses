@@ -63,7 +63,13 @@ export const columns: ColumnDef<Payment>[] = [
         dispatch(setModal(payment.id))
       }
 
-      return <div>{row.original.description}</div>
+      return (
+        <div>
+          <p className='max-h-[60px] min-w-[170px] overflow-hidden'>
+            {row.original.description}
+          </p>
+        </div>
+      )
     },
   },
   {

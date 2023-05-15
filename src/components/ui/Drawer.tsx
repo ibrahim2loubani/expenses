@@ -11,9 +11,11 @@ import {
 } from '@redux/slices/modalSlice'
 import { useAppDispatch, useAppSelector } from '@redux/hooks'
 import { toast } from '@components/ui/Toast'
-import { useRouter } from 'next/router'
-import axios, { AxiosError } from 'axios'
-
+import { useRouter } from 'next/navigation'
+import { CreateInputBody, createSchema } from '@/schema/expenses.schema'
+import axios from 'axios'
+import { useFormik } from 'formik'
+import { IncomingMessage } from 'http'
 interface DrawerProps {
   children: ReactNode
   isOpen: boolean
@@ -21,16 +23,16 @@ interface DrawerProps {
 }
 
 const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
-  // const router = useRouter()
+  const router = useRouter()
   const model = useAppSelector(selectedModal)
   const popupId = useAppSelector(selectedModalId)
   // const dispatch = useAppDispatch()
 
   const [isChecked, setIsChecked] = useState<boolean>(isOpen)
   const [isLoading, setIsLoading] = useState<boolean>(isOpen)
-  const [name, setName] = useState<string>('')
-  const [amount, setAmount] = useState<number>(0)
-  const [description, setDescription] = useState<string>('')
+  // const [name, setName] = useState<string>('')
+  // const [amount, setAmount] = useState<number>(0)
+  // const [description, setDescription] = useState<string>('')
 
   useEffect(() => {
     setIsChecked(isOpen)
@@ -42,44 +44,119 @@ const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
   }
 
   const refreshData = async () => {
-    const router = useRouter()
-    await router.push(router.asPath)
+    // const router = useRouter()
+    await router.refresh()
   }
 
-  const handleSubmit = async () => {
-    if (name && amount && description) {
-      const data = { name, amount, description }
+  // const handleSubmit = async () => {
+  //   if (name && amount && description) {
+  //     setIsLoading((prev) => !prev)
+
+  //     try {
+  //       const data = {
+  //         name: name!,
+  //         amount: amount!,
+  //         description: description!,
+  //       } as CreateInputBody
+
+  //       const response = await axios.post('/api/expenses/create', data)
+  //       console.log(response)
+  //       if (response.status !== 201) {
+  //         toast({
+  //           type: 'error',
+  //           message: response.statusText,
+  //         })
+  //         return
+  //       }
+  //       // refreshData()
+  //     } catch (error: any) {
+  //       console.error('Error creating expense:', error.message)
+  //     } finally {
+  //       setIsLoading((prev) => !prev)
+  //     }
+  //   } else {
+  //     toast({
+  //       type: 'error',
+  //       message: 'All fields required!',
+  //     })
+  //   }
+  // }
+  async function pFetch(
+    url: string,
+    data?: {},
+    req?: IncomingMessage | undefined
+  ) {
+    const baseURl = process.env.NEXT_PUBLIC_BASE_URL
+    const cookies = req?.headers
+    const res = await axios
+      .post(`${baseURl}${url}`, data, {
+        headers: cookies as any,
+      })
+      .catch(function (error) {
+        return error
+      })
+    return res
+  }
+
+  const onSubmit = async (values: {
+    name: string
+    amount: number
+    description: string
+  }): Promise<any | void> => {
+    try {
       setIsLoading((prev) => !prev)
+      const response = await axios.post('api/expenses/create', values)
 
-      try {
-        const response = await axios.post(
-          'http://localhost:3000/api/expenses/create',
-          data
-        )
-        console.log(response)
-
-        // if (response.status !== 201) {
-        //   toast({
-        //     type: 'error',
-        //     message: response.statusText,
-        //   })
-        //   return
-        // }
-      } catch (error: any) {
-        console.error('Error creating expense:', error.message)
-      } finally {
-        setIsLoading((prev) => !prev)
+      if (response?.status === 201) {
+        toggle()
+        refreshData()
+        toast({
+          type: 'success',
+          message: 'Expense added successfully',
+        })
+        values.name = ''
+        values.amount = 0
+        values.description = ''
+      } else {
+        toast({
+          type: 'error',
+          message: 'Error',
+        })
       }
-    } else {
+    } catch (error) {
       toast({
         type: 'error',
-        message: 'All fields required!',
+        message: error as string,
       })
+    } finally {
+      setIsLoading((prev) => !prev)
     }
   }
 
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      name: '',
+      amount: 0,
+      description: '',
+    },
+    validationSchema: createSchema.body,
+    onSubmit,
+  })
+
   return (
-    <div className='drawer drawer-end'>
+    <form
+      className='drawer drawer-end'
+      onSubmit={handleSubmit}
+      autoComplete='off'
+    >
       <input
         id='my-drawer-4'
         type='checkbox'
@@ -94,26 +171,29 @@ const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
           <div className='w-full flex-start flex-col gap-5'>
             <h3 className='text-primary font-medium'>Add New Expense</h3>
             <Input
+              name='name'
               placeholder='Expense name...'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={values.name}
+              onChange={handleChange}
               className='w-full'
             />
             <Input
+              name='amount'
               type='number'
               placeholder='Expense amount...'
-              value={amount}
-              onChange={(e) => setAmount(+e.target.value)}
+              value={values.amount}
+              onChange={handleChange}
               className='w-full'
             />
             <Textarea
+              name='description'
               className='resize-none'
               placeholder='Expense description...'
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={values.description}
+              onChange={handleChange}
             />
             <div className='w-full flex-between'>
-              <Button onClick={handleSubmit} isLoading={isLoading}>
+              <Button type='submit' isLoading={isLoading}>
                 Submit
               </Button>
               <label
@@ -126,7 +206,7 @@ const Drawer: FC<DrawerProps> = ({ children, isOpen, toggle }) => {
           </div>
         </div>
       </div>
-    </div>
+    </form>
   )
 }
 

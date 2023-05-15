@@ -1,3 +1,4 @@
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@lib/db-connection'
 import { validate } from '@middleware/validateResource'
@@ -14,10 +15,10 @@ async function handler(
 
     await prisma.expenses.create({
       data: {
-        name: name!,
         amount: amount!,
-        created: new Date(getFormattedDate()),
         description: description!,
+        created: new Date(getFormattedDate()),
+        name: name!,
       },
     })
 
@@ -27,4 +28,4 @@ async function handler(
   }
 }
 
-export default validate(createSchema, handler, false, ['POST'])
+export default validate(createSchema, handler, true, ['POST'])

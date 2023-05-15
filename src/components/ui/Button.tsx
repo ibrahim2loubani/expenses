@@ -39,6 +39,7 @@ const Button: FC<ButtonProps> = ({
   isLoading,
   href,
   size,
+  type,
   ...props
 }) => {
   if (href) {
@@ -53,6 +54,7 @@ const Button: FC<ButtonProps> = ({
   }
   return (
     <button
+      type={type ?? 'button'}
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={isLoading}
       {...props}
