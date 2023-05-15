@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@lib/utils'
 import * as React from 'react'
 import hotToast, { Toaster as HotToaster } from 'react-hot-toast'
 
@@ -36,7 +36,7 @@ Toast.Description = function ToastDescription({
   className,
   ...props
 }: ToastDescriptionProps) {
-  return <p className={cn('text-sm opacity-80', className)} {...props} />
+  return <p className={cn('text-md font-medium', className)} {...props} />
 }
 
 interface ToastOpts {

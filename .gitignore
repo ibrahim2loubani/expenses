@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# TernJS port file
+.tern-port
+*.DS_Store
+prisma/migrations/migration_lock.toml
+*.sql
